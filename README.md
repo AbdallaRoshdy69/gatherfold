@@ -31,7 +31,7 @@ Run every verification step:
 npm run check
 ```
 
-The suite contains 32 self-contained Vitest and Testing Library tests. It requires no network, credentials, external services, or machine-specific data.
+The suite contains 33 self-contained Vitest and Testing Library tests. It requires no network, credentials, external services, or machine-specific data.
 
 ## Architecture
 
