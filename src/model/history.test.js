@@ -35,6 +35,15 @@ describe('historyReducer', () => {
     expect(reduce(initial, { type: 'REDO' })).toBe(initial)
   })
 
+  it('does not record no-op or invalid slot edits', () => {
+    const initial = createHistory(sampleBooks()[0])
+    const samePage = { type: 'EDIT_SLOT', signatureId: 'rain-a', sheetId: 'rain-a-sheet-1', side: 'front', slotIndex: 0, page: 16 }
+    const invalidSlot = { ...samePage, slotIndex: 8, page: 12 }
+    expect(reduce(initial, samePage)).toBe(initial)
+    expect(reduce(initial, invalidSlot)).toBe(initial)
+    expect(reduce(initial, { ...samePage, page: 1.5 })).toBe(initial)
+  })
+
   it('moves a sheet within a signature', () => {
     const initial = createHistory(sampleBooks()[0])
     const moved = reduce(initial, { type: 'MOVE_SHEET', signatureId: 'rain-a', sheetId: 'rain-a-sheet-1', direction: 1 })
@@ -52,6 +61,12 @@ describe('historyReducer', () => {
     const noted = reduce(unproofed, { type: 'UPDATE_NOTE', signatureId: 'rain-a', note: 'Check fold.' })
     expect(noted.present.signatures[0]).toMatchObject({ proofed: false, note: 'Check fold.' })
     expect(noted.past).toHaveLength(2)
+  })
+
+  it('does not record an unchanged binder note', () => {
+    const initial = createHistory(sampleBooks()[0])
+    const note = initial.present.signatures[0].note
+    expect(reduce(initial, { type: 'UPDATE_NOTE', signatureId: 'rain-a', note })).toBe(initial)
   })
 
   it('adds a signature and extends the book by its page count', () => {

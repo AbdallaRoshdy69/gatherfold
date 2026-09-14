@@ -34,14 +34,20 @@ export function historyReducer(state, action) {
     }
     case 'EDIT_SLOT': {
       const page = Number(action.page)
-      const present = updateSignature(state.present, action.signatureId, (signature) => ({
-        ...signature,
-        proofed: false,
-        sheets: signature.sheets.map((sheet) => sheet.id === action.sheetId ? {
-          ...sheet,
-          [action.side]: sheet[action.side].map((current, index) => index === action.slotIndex ? page : current),
-        } : sheet),
-      }))
+      if (!Number.isInteger(page) || page < 1) return state
+      const present = updateSignature(state.present, action.signatureId, (signature) => {
+        const sheet = signature.sheets.find((entry) => entry.id === action.sheetId)
+        const slots = sheet?.[action.side]
+        if (!Array.isArray(slots) || action.slotIndex < 0 || action.slotIndex >= slots.length || slots[action.slotIndex] === page) return signature
+        return {
+          ...signature,
+          proofed: false,
+          sheets: signature.sheets.map((entry) => entry.id === action.sheetId ? {
+            ...entry,
+            [action.side]: entry[action.side].map((current, index) => index === action.slotIndex ? page : current),
+          } : entry),
+        }
+      })
       return commit(state, present)
     }
     case 'MOVE_SHEET': {
@@ -58,7 +64,9 @@ export function historyReducer(state, action) {
     case 'TOGGLE_PROOFED':
       return commit(state, updateSignature(state.present, action.signatureId, (signature) => ({ ...signature, proofed: !signature.proofed })))
     case 'UPDATE_NOTE':
-      return commit(state, updateSignature(state.present, action.signatureId, (signature) => ({ ...signature, note: action.note })))
+      return commit(state, updateSignature(state.present, action.signatureId, (signature) => (
+        signature.note === action.note ? signature : { ...signature, note: action.note }
+      )))
     case 'ADD_SIGNATURE':
       return commit(state, {
         ...state.present,
