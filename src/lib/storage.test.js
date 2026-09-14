@@ -24,7 +24,12 @@ describe('book storage', () => {
   it('saves under the versioned key', () => {
     const calls = []
     const books = sampleBooks()
-    saveBooks(books, { setItem: (key, value) => calls.push([key, value]) })
+    expect(saveBooks(books, { setItem: (key, value) => calls.push([key, value]) })).toBe(true)
     expect(calls).toEqual([[STORAGE_KEY, JSON.stringify(books)]])
+  })
+
+  it('survives browsers that reject storage writes', () => {
+    const storage = { setItem: () => { throw new DOMException('Quota exceeded', 'QuotaExceededError') } }
+    expect(saveBooks(sampleBooks(), storage)).toBe(false)
   })
 })

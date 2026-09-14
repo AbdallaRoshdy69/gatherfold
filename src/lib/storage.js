@@ -20,5 +20,10 @@ export function loadBooks(storage = localStorage) {
 }
 
 export function saveBooks(books, storage = localStorage) {
-  storage.setItem(STORAGE_KEY, JSON.stringify(books))
+  try {
+    storage.setItem(STORAGE_KEY, JSON.stringify(books))
+    return true
+  } catch {
+    return false
+  }
 }
