@@ -58,6 +58,24 @@ describe('Gatherfold workbench', () => {
     expect(screen.getByRole('heading', { name: 'Page 15' })).toBeInTheDocument()
   })
 
+  it('advertises and handles undo and redo keyboard shortcuts', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    const undo = screen.getByRole('button', { name: 'Undo last change' })
+    const redo = screen.getByRole('button', { name: 'Redo last change' })
+    expect(undo).toHaveAttribute('aria-keyshortcuts', 'Control+Z Meta+Z')
+    expect(redo).toHaveAttribute('aria-keyshortcuts', 'Control+Shift+Z Meta+Shift+Z Control+Y Meta+Y')
+
+    const input = screen.getByLabelText('Page number')
+    await user.clear(input)
+    await user.type(input, '15')
+    await user.click(screen.getByRole('button', { name: 'Apply' }))
+    await user.keyboard('{Control>}z{/Control}')
+    expect(screen.getByRole('heading', { name: 'Page 16' })).toBeInTheDocument()
+    await user.keyboard('{Control>}{Shift>}z{/Shift}{/Control}')
+    expect(screen.getByRole('heading', { name: 'Page 15' })).toBeInTheDocument()
+  })
+
   it('locates a page in another signature and selects its slot', async () => {
     const user = userEvent.setup()
     render(<App />)
