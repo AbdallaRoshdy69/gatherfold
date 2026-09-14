@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Gatherfold folded page mark">
+  <rect width="64" height="64" rx="10" fill="#29231d"/>
+  <path d="M14 12h27l9 9v31H14z" fill="#fffaf0" stroke="#ff6b3d" stroke-width="3"/>
+  <path d="M41 12v10h9" fill="none" stroke="#ff6b3d" stroke-width="3"/>
+  <path d="M22 30h20M22 38h16" stroke="#5b8c76" stroke-width="3"/>
+</svg>
