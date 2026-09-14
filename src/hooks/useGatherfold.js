@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useReducer, useState } from 'react'
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react'
 import { createSignature, nextSignatureStart } from '../model/imposition.js'
 import { createHistory, historyReducer } from '../model/history.js'
 import { analyzeBook, pageOccurrences } from '../model/validation.js'
@@ -23,6 +23,7 @@ export function useGatherfold() {
   const [viewSide, setViewSide] = useState('both')
   const [density, setDensity] = useState('comfortable')
   const [announcement, setAnnouncement] = useState('Imposition workbench ready.')
+  const selectionsByBook = useRef(new Map())
 
   const book = history.present
   const activeSignature = useMemo(
@@ -71,12 +72,13 @@ export function useGatherfold() {
     if (bookId === activeBookId) return
     const target = books.find((entry) => entry.id === bookId)
     if (!target) return
+    selectionsByBook.current.set(activeBookId, selection)
     dispatch({ type: 'LOAD_BOOK', book: target })
     setActiveBookId(bookId)
-    setSelection(firstSelection(target))
+    setSelection(selectionsByBook.current.get(bookId) ?? firstSelection(target))
     setViewSide('both')
     setAnnouncement(`${target.title} opened.`)
-  }, [activeBookId, books])
+  }, [activeBookId, books, selection])
 
   const chooseSignature = useCallback((signatureId) => {
     const signature = book.signatures.find((entry) => entry.id === signatureId)

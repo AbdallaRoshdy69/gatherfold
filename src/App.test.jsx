@@ -21,6 +21,17 @@ describe('Gatherfold workbench', () => {
     expect(screen.getByRole('heading', { name: 'Page 16' })).toBeInTheDocument()
   })
 
+  it('restores the last selected slot independently for each book', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await user.click(screen.getByRole('button', { name: /Page 3, front side/ }))
+    await user.click(screen.getByRole('button', { name: /The Night Orchard/ }))
+    await user.click(screen.getByRole('button', { name: /Field Notes on Rain/ }))
+
+    expect(screen.getByRole('heading', { name: 'Page 3' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Page 3, front side/ })).toHaveAttribute('aria-pressed', 'true')
+  })
+
   it('changes the canvas from both sides to back sides only', async () => {
     const user = userEvent.setup()
     render(<App />)
