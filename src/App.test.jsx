@@ -114,4 +114,20 @@ describe('Gatherfold workbench', () => {
     expect(screen.queryByRole('dialog', { name: 'Add a 16-page signature' })).not.toBeInTheDocument()
     expect(trigger).toHaveFocus()
   })
+
+  it('keeps keyboard focus inside the add-signature dialog', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await user.click(screen.getByRole('button', { name: 'Add signature' }))
+    const dialog = screen.getByRole('dialog', { name: 'Add a 16-page signature' })
+    const close = within(dialog).getByRole('button', { name: 'Close add signature panel' })
+    const add = within(dialog).getByRole('button', { name: 'Add signature' })
+
+    await user.tab({ shift: true })
+    expect(close).toHaveFocus()
+    await user.tab({ shift: true })
+    expect(add).toHaveFocus()
+    await user.tab()
+    expect(close).toHaveFocus()
+  })
 })

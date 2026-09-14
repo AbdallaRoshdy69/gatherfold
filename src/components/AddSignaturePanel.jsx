@@ -7,6 +7,7 @@ export function AddSignaturePanel({ open, onClose, onAdd }) {
   const [paper, setPaper] = useState('Natural')
   const [note, setNote] = useState('')
   const labelRef = useRef(null)
+  const dialogRef = useRef(null)
 
   useEffect(() => {
     if (!open) return undefined
@@ -29,18 +30,33 @@ export function AddSignaturePanel({ open, onClose, onAdd }) {
     onClose()
   }
 
+  function handleKeyDown(event) {
+    if (event.key === 'Escape') {
+      event.preventDefault()
+      onClose()
+      return
+    }
+    if (event.key !== 'Tab') return
+
+    const focusable = [...dialogRef.current.querySelectorAll('button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled)')]
+    const first = focusable[0]
+    const last = focusable.at(-1)
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault()
+      last.focus()
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault()
+      first.focus()
+    }
+  }
+
   return <div
     className="modal-layer"
     role="presentation"
-    onKeyDown={(event) => {
-      if (event.key === 'Escape') {
-        event.preventDefault()
-        onClose()
-      }
-    }}
+    onKeyDown={handleKeyDown}
     onMouseDown={(event) => { if (event.target === event.currentTarget) onClose() }}
   >
-    <section className="add-signature" role="dialog" aria-modal="true" aria-labelledby="add-signature-title">
+    <section ref={dialogRef} className="add-signature" role="dialog" aria-modal="true" aria-labelledby="add-signature-title">
       <div className="panel-heading"><div><p className="eyebrow">Extend the book</p><h2 id="add-signature-title">Add a 16-page signature</h2></div><button type="button" className="icon-button" aria-label="Close add signature panel" onClick={onClose}>×</button></div>
       <form onSubmit={submit}>
         <label htmlFor="signature-label">Signature label</label><input ref={labelRef} id="signature-label" required value={label} placeholder="E · Appendix" onChange={(event) => setLabel(event.target.value)} />
