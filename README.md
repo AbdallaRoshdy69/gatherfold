@@ -45,6 +45,15 @@ The workbench separates immutable domain transitions from React orchestration:
 
 See `docs/architecture.md` and `docs/imposition.md` for the full design.
 
+## Keyboard and accessibility
+
+- `Ctrl/⌘ + Z` undoes the latest model change.
+- `Ctrl/⌘ + Shift + Z` or `Ctrl/⌘ + Y` redoes it.
+- The signature dialog traps focus, closes with `Escape`, and restores focus to its trigger.
+- Proof and conflict states always include text and never rely on colour alone.
+
+See `docs/accessibility.md` for the interaction contract and manual review checklist.
+
 ## Privacy
 
 Gatherfold stores projects in the current browser's `localStorage`. It makes no network requests and sends no book data elsewhere.
