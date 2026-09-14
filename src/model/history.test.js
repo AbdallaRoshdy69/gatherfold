@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { sampleBooks } from '../data/sampleBooks.js'
 import { createSignature } from './imposition.js'
-import { createHistory, historyReducer } from './history.js'
+import { createHistory, HISTORY_LIMIT, historyReducer } from './history.js'
 
 function reduce(state, action) { return historyReducer(state, action) }
 
@@ -75,5 +75,20 @@ describe('historyReducer', () => {
     const next = reduce(initial, { type: 'ADD_SIGNATURE', signature, pageCount: 16 })
     expect(next.present.totalPages).toBe(80)
     expect(next.present.signatures.at(-1).id).toBe('rain-e')
+  })
+
+  it('bounds retained undo history for long editing sessions', () => {
+    let state = createHistory(sampleBooks()[0])
+    for (let index = 0; index < HISTORY_LIMIT + 7; index += 1) {
+      state = reduce(state, {
+        type: 'EDIT_SLOT',
+        signatureId: 'rain-a',
+        sheetId: 'rain-a-sheet-1',
+        side: 'front',
+        slotIndex: 0,
+        page: index % 2 === 0 ? 15 : 16,
+      })
+    }
+    expect(state.past).toHaveLength(HISTORY_LIMIT)
   })
 })

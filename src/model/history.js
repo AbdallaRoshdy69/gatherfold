@@ -1,3 +1,5 @@
+export const HISTORY_LIMIT = 50
+
 function updateSignature(book, signatureId, updater) {
   let changed = false
   const signatures = book.signatures.map((signature) => {
@@ -11,7 +13,7 @@ function updateSignature(book, signatureId, updater) {
 
 function commit(state, present) {
   if (present === state.present) return state
-  return { past: [...state.past, state.present], present, future: [] }
+  return { past: [...state.past, state.present].slice(-HISTORY_LIMIT), present, future: [] }
 }
 
 export function createHistory(book) {
